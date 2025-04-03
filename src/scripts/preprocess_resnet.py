@@ -72,13 +72,14 @@ class DataProcessor:
 
         output_path = self.paths.get_full_path(self.paths.directional_rels_procd)
         df = pd.read_csv(self.paths.get_full_path(self.paths.directional_rels), sep='|', header=None, encoding='utf-8')
-        df.columns = ['msrc_id', ':START_ID', 'type:TYPE', 'effect', 'mechanism', 'ref_count:int', ':END_ID',
+        df.columns = ['msrc_id', ':START_ID', 'type:TYPE', 'effect', 'mechanism', 'ref_count:int', 'sent_count:int', ':END_ID',
                       'id2', 'biomarkertype', 'celllinename', 'celltype', 'changetype', 'organ', 'organism',
                       'quantitativetype', 'tissue', 'nct_id', 'phase']
         df = df.drop(columns=['id2'])
         df['phase'] = df['phase'].fillna('None')
         df = convert_object_to_category(df)
         df['ref_count:int'] = df['ref_count:int'].astype('int16')
+        df['sent_count:int'] = df['sent_count:int'].astype('int16')
         with open(output_path, 'wb') as file:
             pickle.dump(df, file)
 
@@ -92,7 +93,7 @@ class DataProcessor:
         df = pd.read_csv(self.paths.get_full_path(self.paths.bidirectional_rels), sep='|', header=None,
                          encoding='utf-8')
         df.columns = ['msrc_id', ':START_ID', 'inOutkey', 'type:TYPE', 'relationship', 'effect', 'mechanism',
-                      'ref_count:int', ':END_ID', 'id2', 'biomarkertype', 'celllinename', 'celltype',
+                      'ref_count:int', 'sent_count:int', ':END_ID', 'id2', 'biomarkertype', 'celllinename', 'celltype',
                       'changetype', 'organ', 'organism', 'quantitativetype', 'tissue']
         first_ids, second_ids = inOutkeys_to_lists(df)
         df.drop(columns=['inOutkey', 'id2', 'relationship'], inplace=True)
@@ -101,6 +102,7 @@ class DataProcessor:
         df[':START_ID'] = df[':START_ID'].astype('int64')
         df[':END_ID'] = df[':END_ID'].astype('int64')
         df['ref_count:int'] = df['ref_count:int'].astype('int16')
+        df['sent_count:int'] = df['sent_count:int'].astype('int16')
         df = convert_object_to_category(df)
         with open(output_path, 'wb') as file:
             pickle.dump(df, file)
@@ -162,7 +164,7 @@ class DataProcessor:
         output_path = self.paths.get_full_path(self.paths.nodes_procd)
         df = pd.read_csv(self.paths.get_full_path(self.paths.nodes_raw), sep='|', header=None, encoding='utf-8',
                          low_memory=False)
-        df.columns = [':ID', 'name', ':LABEL']
+        df.columns = [':ID', 'name', ':LABEL', 'urn', 'attributeValues', 'attributeNames']
         df = df.applymap(lambda x: str(x).strip())
         df[':LABEL'] = df[':LABEL'].apply(lambda x: x.upper())
         df[':ID'] = df[':ID'].astype('int64')

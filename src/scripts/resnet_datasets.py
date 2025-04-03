@@ -10,31 +10,103 @@ from configs.database import SQLDBCreds
 from configs.paths import DataPaths
 
 directional_sql_query = f"SELECT \
-control.id, inkey[1], controltype,  string_agg(distinct(effect), ', '), string_agg(distinct(mechanism), ', '), \
-num_refs, outkey[1] , reference.id, string_agg(distinct(biomarkertype), ', ') ,\
-string_agg(distinct(celllinename), ', '), string_agg(distinct(celltype), ', '), string_agg(distinct(changetype), ', '),\
-string_agg(distinct(organ), ', '), string_agg(distinct(organism), ', '), string_agg(distinct(quantitativetype), ', '), \
-string_agg(distinct(tissue), ', '), string_agg(distinct(nct_id), ', '),  string_agg(distinct(phase), ', ') \
-FROM {database_name}.control, {database_name}.reference \
-WHERE control.id = reference.id and inkey[1] is not null and outkey[1] is not null \
-GROUP BY control.id, inkey[1], controltype, num_refs, outkey[1], reference.id"
+    control.id, \
+    inkey[1], \
+    controltype, \
+    string_agg(distinct(effect), ', '), \
+    string_agg(distinct(mechanism), ', '), \
+    num_refs, \
+    num_sentences, \
+    outkey[1], \
+    reference.id, \
+    string_agg(distinct(biomarkertype), ', '), \
+    string_agg(distinct(celllinename), ', '), \
+    string_agg(distinct(celltype), ', '), \
+    string_agg(distinct(changetype), ', '), \
+    string_agg(distinct(organ), ', '), \
+    string_agg(distinct(organism), ', '), \
+    string_agg(distinct(quantitativetype), ', '), \
+    string_agg(distinct(tissue), ', '), \
+    string_agg(distinct(nct_id), ', '), \
+    string_agg(distinct(phase), ', ') \
+FROM \
+    {database_name}.control, \
+    {database_name}.reference \
+WHERE \
+    control.id = reference.id \
+    AND inkey[1] IS NOT NULL \
+    AND outkey[1] IS NOT NULL \
+GROUP BY \
+    control.id, \
+    inkey[1], \
+    controltype, \
+    num_refs, \
+    outkey[1], \
+    reference.id"
 
 bi_directional_sql_query = f"SELECT \
-control.id, inkey[1], inoutkey, controltype, relationship, string_agg(distinct(effect), ', '), \
-string_agg(distinct(mechanism), ', '), num_refs, outkey[1], reference.id, string_agg(distinct(biomarkertype), ', '), \
-string_agg(distinct(celllinename), ', '), string_agg(distinct(celltype), ', '), string_agg(distinct(changetype), ', '),\
-string_agg(distinct(organ), ', '), string_agg(distinct(organism), ', '), string_agg(distinct(quantitativetype), ', '), \
-string_agg(distinct(tissue), ', ') \
-FROM {database_name}.control, {database_name}.reference \
-WHERE control.id = reference.id and inkey[1] is null and outkey[1] is null \
-GROUP BY control.id, controltype, reference.id"
+    control.id, \
+    inkey[1], \
+    inoutkey, \
+    controltype, \
+    relationship, \
+    string_agg(distinct(effect), ', '), \
+    string_agg(distinct(mechanism), ', '), \
+    num_refs, \
+    num_sentences, \
+    outkey[1], \
+    reference.id, \
+    string_agg(distinct(biomarkertype), ', '), \
+    string_agg(distinct(celllinename), ', '), \
+    string_agg(distinct(celltype), ', '), \
+    string_agg(distinct(changetype), ', '), \
+    string_agg(distinct(organ), ', '), \
+    string_agg(distinct(organism), ', '), \
+    string_agg(distinct(quantitativetype), ', '), \
+    string_agg(distinct(tissue), ', ') \
+FROM \
+    {database_name}.control, \
+    {database_name}.reference \
+WHERE \
+    control.id = reference.id \
+    AND inkey[1] IS NULL \
+    AND outkey[1] IS NULL \
+GROUP BY \
+    control.id, \
+    controltype, \
+    reference.id"
 
-attributes_sql_query = f"SELECT  \
-id, inkey[1], attributes, relationship, outkey[1] from {database_name}.control \
-WHERE (control.id = control.attributes and inkey[1] is not null and outkey[1] is not null)"
+attributes_sql_query = f"SELECT \
+    id, \
+    inkey[1], \
+    attributes, \
+    relationship, \
+    outkey[1] \
+FROM \
+    {database_name}.control \
+WHERE \
+    (control.id = control.attributes \
+    AND inkey[1] IS NOT NULL \
+    AND outkey[1] IS NOT NULL)"
 
-node_sql_query = f"select id, name, nodetype from {database_name}.node where id is not null and name is not null and nodetype \
- is not null"
+node_sql_query = f"SELECT \
+    n.id, \
+    n.name, \
+    n.nodetype, \
+    n.urn, \
+    (SELECT string_agg(a.value, ', ') \
+     FROM {database_name}.attr a \
+     WHERE a.id = ANY(n.attributes)) AS attribute_values, \
+    (SELECT string_agg(a.name, ', ') \
+     FROM {database_name}.attr a \
+     WHERE a.id = ANY(n.attributes)) AS attribute_names \
+FROM \
+    {database_name}.node n \
+WHERE \
+    n.id IS NOT NULL \
+    AND n.name IS NOT NULL \
+    AND n.nodetype IS NOT NULL \
+    AND n.urn IS NOT NULL"
 
 
 class CreateDatasets:
