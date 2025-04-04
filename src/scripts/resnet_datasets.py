@@ -91,6 +91,7 @@ WHERE \
 
 node_sql_query = f"SELECT \
     n.id, \
+    n.id, \
     n.name, \
     n.nodetype, \
     n.urn, \

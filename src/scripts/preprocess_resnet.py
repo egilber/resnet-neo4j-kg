@@ -166,7 +166,7 @@ class DataProcessor:
         output_path = self.paths.get_full_path(self.paths.nodes_procd)
         df = pd.read_csv(self.paths.get_full_path(self.paths.nodes_raw), sep='|', header=None, encoding='utf-8',
                          low_memory=False)
-        df.columns = [':ID', 'name', ':LABEL', 'urn', 'attributeValues', 'attributeNames']
+        df.columns = [':ID', 'postgresqlID', 'name', ':LABEL', 'urn', 'attributeValues', 'attributeNames']
         df = df.applymap(lambda x: str(x).strip())
         df[':LABEL'] = df[':LABEL'].apply(lambda x: x.upper())
         df[':ID'] = df[':ID'].astype('int64')
