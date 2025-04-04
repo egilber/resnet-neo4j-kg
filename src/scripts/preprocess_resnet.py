@@ -140,6 +140,7 @@ class DataProcessor:
 
         df_concat = pd.concat([df_directional, df_biDirectional, df_att], ignore_index=True)
         df_concat['ref_count:int'].fillna(0, inplace=True)
+        df_concat['sent_count:int'].fillna(0, inplace=True)
         for col in df_concat.select_dtypes(include=['category']).columns:
             df_concat[col] = df_concat[col].astype('object')
         df_concat.fillna('None', inplace=True)
@@ -147,12 +148,13 @@ class DataProcessor:
         df_concat = df_concat.replace('None', '_')
 
         df_concat['ref_count:int'] = df_concat['ref_count:int'].astype('int16')
+        df_concat['sent_count:int'] = df_concat['sent_count:int'].astype('int16')
         df_concat['msrc_id'] = df_concat['msrc_id'].astype('int64')
         df_concat = convert_object_to_category(df_concat.drop_duplicates().reset_index(drop=True))
 
         df_concat['type:TYPE'] = df_concat['type:TYPE'].apply(lambda x: x.upper())
         cols = list(df_directional.columns)
-        df_concat[cols].to_csv(output_path, sep='|', index=False, header=True)
+        df_concat[cols].to_csv(output_path, sep='|', index=False, header=False)
 
         header_path = self.paths.get_full_path(self.paths.relationships_header)
         create_header_file(cols, header_path)
@@ -170,7 +172,7 @@ class DataProcessor:
         df[':ID'] = df[':ID'].astype('int64')
         df['name'] = df['name'].replace([';;', ';'], ':', regex=True)
 
-        df.to_csv(output_path, sep='|', index=False, header=True)
+        df.to_csv(output_path, sep='|', index=False, header=False)
         cols = list(df.columns)
         header_path = self.paths.get_full_path(self.paths.nodes_header)
         create_header_file(cols, header_path)
