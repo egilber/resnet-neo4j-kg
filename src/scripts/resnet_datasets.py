@@ -97,10 +97,19 @@ node_sql_query = f"SELECT \
     n.urn, \
     (SELECT string_agg(a.value, ', ') \
      FROM {database_name}.attr a \
-     WHERE a.id = ANY(n.attributes)) AS attribute_values, \
-    (SELECT string_agg(a.name, ', ') \
+     WHERE a.id = ANY(n.attributes) AND a.name IN ('Alias')) AS attribute_alias, \
+    (SELECT string_agg(a.value, ', ') \
      FROM {database_name}.attr a \
-     WHERE a.id = ANY(n.attributes)) AS attribute_names \
+     WHERE a.id = ANY(n.attributes) AND a.name IN ('Description')) AS attribute_description, \
+    (SELECT string_agg(a.value, ', ') \
+     FROM {database_name}.attr a \
+     WHERE a.id = ANY(n.attributes) AND a.name IN ('Notes')) AS attribute_notes, \
+    (SELECT string_agg(a.value, ', ') \
+     FROM {database_name}.attr a \
+     WHERE a.id = ANY(n.attributes) AND a.name IN ('Reaxys ID')) AS attribute_reaxys_id, \
+    (SELECT string_agg(a.value, ', ') \
+     FROM {database_name}.attr a \
+     WHERE a.id = ANY(n.attributes) AND a.name IN ('CAS ID')) AS attribute_cas_id \
 FROM \
     {database_name}.node n \
 WHERE \
