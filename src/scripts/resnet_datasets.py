@@ -19,6 +19,7 @@ directional_sql_query = f"SELECT \
     num_sentences, \
     outkey[1], \
     reference.id, \
+    reference.source, \
     string_agg(distinct(biomarkertype), ', '), \
     string_agg(distinct(celllinename), ', '), \
     string_agg(distinct(celltype), ', '), \
@@ -42,7 +43,8 @@ GROUP BY \
     controltype, \
     num_refs, \
     outkey[1], \
-    reference.id"
+    reference.id, \
+    reference.source"
 
 bi_directional_sql_query = f"SELECT \
     control.id, \
@@ -56,6 +58,7 @@ bi_directional_sql_query = f"SELECT \
     num_sentences, \
     outkey[1], \
     reference.id, \
+    reference.source, \
     string_agg(distinct(biomarkertype), ', '), \
     string_agg(distinct(celllinename), ', '), \
     string_agg(distinct(celltype), ', '), \
@@ -74,7 +77,8 @@ WHERE \
 GROUP BY \
     control.id, \
     controltype, \
-    reference.id"
+    reference.id, \
+    reference.source"
 
 attributes_sql_query = f"SELECT \
     id, \

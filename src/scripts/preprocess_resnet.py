@@ -73,7 +73,7 @@ class DataProcessor:
         output_path = self.paths.get_full_path(self.paths.directional_rels_procd)
         df = pd.read_csv(self.paths.get_full_path(self.paths.directional_rels), sep='|', header=None, encoding='utf-8')
         df.columns = ['msrc_id', ':START_ID', 'type:TYPE', 'effect', 'mechanism', 'ref_count:int', 'sent_count:int', ':END_ID',
-                      'id2', 'biomarkertype', 'celllinename', 'celltype', 'changetype', 'organ', 'organism',
+                      'id2', 'source', 'biomarkertype', 'celllinename', 'celltype', 'changetype', 'organ', 'organism',
                       'quantitativetype', 'tissue', 'nct_id', 'phase']
         df = df.drop(columns=['id2'])
         df['phase'] = df['phase'].fillna('None')
@@ -93,7 +93,7 @@ class DataProcessor:
         df = pd.read_csv(self.paths.get_full_path(self.paths.bidirectional_rels), sep='|', header=None,
                          encoding='utf-8')
         df.columns = ['msrc_id', ':START_ID', 'inOutkey', 'type:TYPE', 'relationship', 'effect', 'mechanism',
-                      'ref_count:int', 'sent_count:int', ':END_ID', 'id2', 'biomarkertype', 'celllinename', 'celltype',
+                      'ref_count:int', 'sent_count:int', ':END_ID', 'id2', 'source', 'biomarkertype', 'celllinename', 'celltype',
                       'changetype', 'organ', 'organism', 'quantitativetype', 'tissue']
         first_ids, second_ids = inOutkeys_to_lists(df)
         df.drop(columns=['inOutkey', 'id2', 'relationship'], inplace=True)
