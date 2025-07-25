@@ -72,14 +72,14 @@ class DataProcessor:
 
         output_path = self.paths.get_full_path(self.paths.directional_rels_procd)
         df = pd.read_csv(self.paths.get_full_path(self.paths.directional_rels), sep='|', header=None, encoding='utf-8')
-        df.columns = ['msrc_id', ':START_ID', 'type:TYPE', 'effect', 'mechanism', 'ref_count:int', 'sent_count:int', ':END_ID',
-                      'id2', 'source', 'biomarkertype', 'celllinename', 'celltype', 'changetype', 'organ', 'organism',
-                      'quantitativetype', 'tissue', 'nct_id', 'phase']
+        df.columns = ['RelationID', ':START_ID', 'type:TYPE', 'Effect', 'Mechanism', 'RelationNumberOfReferences:int', 'RelationNumberOfSentences:int', ':END_ID',
+                      'id2', 'Source', 'BiomarkerType', 'CellLineName', 'CellType', 'ChangeType', 'Organ', 'Organism',
+                      'QuantitativeType', 'Tissue', 'NCT_ID', 'Phase']
         df = df.drop(columns=['id2'])
-        df['phase'] = df['phase'].fillna('None')
+        df['Phase'] = df['Phase'].fillna('None')
         df = convert_object_to_category(df)
-        df['ref_count:int'] = df['ref_count:int'].astype('int16')
-        df['sent_count:int'] = df['sent_count:int'].astype('int16')
+        df['RelationNumberOfReferences:int'] = df['RelationNumberOfReferences:int'].astype('int16')
+        df['RelationNumberOfSentences:int'] = df['RelationNumberOfSentences:int'].astype('int16')
         with open(output_path, 'wb') as file:
             pickle.dump(df, file)
 
@@ -92,17 +92,17 @@ class DataProcessor:
 
         df = pd.read_csv(self.paths.get_full_path(self.paths.bidirectional_rels), sep='|', header=None,
                          encoding='utf-8')
-        df.columns = ['msrc_id', ':START_ID', 'inOutkey', 'type:TYPE', 'relationship', 'effect', 'mechanism',
-                      'ref_count:int', 'sent_count:int', ':END_ID', 'id2', 'source', 'biomarkertype', 'celllinename', 'celltype',
-                      'changetype', 'organ', 'organism', 'quantitativetype', 'tissue']
+        df.columns = ['RelationID', ':START_ID', 'inOutkey', 'type:TYPE', 'relationship', 'Effect', 'Mechanism',
+                      'RelationNumberOfReferences:int', 'RelationNumberOfSentences:int', ':END_ID', 'id2', 'Source', 'BiomarkerType', 'CellLineName', 'CellType',
+                      'ChangeType', 'Organ', 'Organism', 'QuantitativeType', 'Tissue']
         first_ids, second_ids = inOutkeys_to_lists(df)
         df.drop(columns=['inOutkey', 'id2', 'relationship'], inplace=True)
         df[':START_ID'] = first_ids
         df[':END_ID'] = second_ids
         df[':START_ID'] = df[':START_ID'].astype('int64')
         df[':END_ID'] = df[':END_ID'].astype('int64')
-        df['ref_count:int'] = df['ref_count:int'].astype('int16')
-        df['sent_count:int'] = df['sent_count:int'].astype('int16')
+        df['RelationNumberOfReferences:int'] = df['RelationNumberOfReferences:int'].astype('int16')
+        df['RelationNumberOfSentences:int'] = df['RelationNumberOfSentences:int'].astype('int16')
         df = convert_object_to_category(df)
         with open(output_path, 'wb') as file:
             pickle.dump(df, file)
@@ -115,7 +115,7 @@ class DataProcessor:
         output_path = self.paths.get_full_path(self.paths.attribute_rels_procd)
         df = pd.read_csv(self.paths.get_full_path(self.paths.attribute_rels), sep='|', header=None, encoding='utf-8',
                          low_memory=False)
-        df.columns = ['msrc_id', ':START_ID', 'id2', 'type:TYPE', ':END_ID']
+        df.columns = ['RelationID', ':START_ID', 'id2', 'type:TYPE', ':END_ID']
         df = df.drop(columns=['id2'])
         df = df.dropna(how='any')
         df.reset_index(drop=True, inplace=True)
@@ -139,17 +139,17 @@ class DataProcessor:
         df_att = pd.read_pickle(self.paths.get_full_path(self.paths.attribute_rels_procd))
 
         df_concat = pd.concat([df_directional, df_biDirectional, df_att], ignore_index=True)
-        df_concat['ref_count:int'].fillna(0, inplace=True)
-        df_concat['sent_count:int'].fillna(0, inplace=True)
+        df_concat['RelationNumberOfReferences:int'].fillna(0, inplace=True)
+        df_concat['RelationNumberOfSentences:int'].fillna(0, inplace=True)
         for col in df_concat.select_dtypes(include=['category']).columns:
             df_concat[col] = df_concat[col].astype('object')
         df_concat.fillna('None', inplace=True)
         df_concat = df_concat.replace('nan', 'None')
         df_concat = df_concat.replace('None', '_')
 
-        df_concat['ref_count:int'] = df_concat['ref_count:int'].astype('int16')
-        df_concat['sent_count:int'] = df_concat['sent_count:int'].astype('int16')
-        df_concat['msrc_id'] = df_concat['msrc_id'].astype('int64')
+        df_concat['RelationNumberOfReferences:int'] = df_concat['RelationNumberOfReferences:int'].astype('int16')
+        df_concat['RelationNumberOfSentences:int'] = df_concat['RelationNumberOfSentences:int'].astype('int16')
+        df_concat['RelationID'] = df_concat['RelationID'].astype('int64')
         df_concat = convert_object_to_category(df_concat.drop_duplicates().reset_index(drop=True))
 
         df_concat['type:TYPE'] = df_concat['type:TYPE'].apply(lambda x: x.upper())
@@ -166,11 +166,11 @@ class DataProcessor:
         output_path = self.paths.get_full_path(self.paths.nodes_procd)
         df = pd.read_csv(self.paths.get_full_path(self.paths.nodes_raw), sep='|', header=None, encoding='utf-8',
                          low_memory=False)
-        df.columns = [':ID', 'postgresqlID', 'name', ':LABEL', 'urn', 'alias', 'description','notes','reaxysID','casID']
+        df.columns = [':ID', 'NodeID', 'Name', ':LABEL', 'URN', 'Alias', 'Description','Notes','Reaxys_ID','CAS_ID']
         df = df.applymap(lambda x: str(x).strip())
         df[':LABEL'] = df[':LABEL'].apply(lambda x: x.upper())
         df[':ID'] = df[':ID'].astype('int64')
-        df['name'] = df['name'].replace([';;', ';'], ':', regex=True)
+        df['Name'] = df['Name'].replace([';;', ';'], ':', regex=True)
 
         df.fillna('None', inplace=True)
         df.replace('nan', 'None', inplace=True) 
