@@ -173,7 +173,7 @@ class DataProcessor:
         df['Name'] = df['Name'].replace([';;', ';'], ':', regex=True)
 
         df.fillna('None', inplace=True)
-        df.replace('nan', 'None', inplace=True) 
+        df.replace('nan', 'None', inplace=True)
         df.replace('None', '_', inplace=True)
 
         df.to_csv(output_path, sep='|', index=False, header=False)
