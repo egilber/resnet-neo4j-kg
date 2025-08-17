@@ -152,7 +152,7 @@ class DataProcessor:
         df_concat['RelationID'] = df_concat['RelationID'].astype('int64')
         df_concat = convert_object_to_category(df_concat.drop_duplicates().reset_index(drop=True))
 
-        df_concat['type:TYPE'] = df_concat['type:TYPE'].apply(lambda x: x.upper())
+        #df_concat['type:TYPE'] = df_concat['type:TYPE'].apply(lambda x: x.upper())
         cols = list(df_directional.columns)
         df_concat[cols].to_csv(output_path, sep='|', index=False, header=False)
 
@@ -168,7 +168,7 @@ class DataProcessor:
                          low_memory=False)
         df.columns = [':ID', 'NodeID', 'Name', ':LABEL', 'URN', 'Alias', 'Description','Notes','Reaxys_ID','CAS_ID']
         df = df.applymap(lambda x: str(x).strip())
-        df[':LABEL'] = df[':LABEL'].apply(lambda x: x.upper())
+        #df[':LABEL'] = df[':LABEL'].apply(lambda x: x.upper())
         df[':ID'] = df[':ID'].astype('int64')
         df['Name'] = df['Name'].replace([';;', ';'], ':', regex=True)
 
